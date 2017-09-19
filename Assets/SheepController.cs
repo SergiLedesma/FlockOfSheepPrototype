@@ -20,6 +20,11 @@ public class SheepController : MonoBehaviour
     private bool defaultDestinationReached = false;
     private Vector2 defaultDestination;
 
+    [SerializeField]
+    private float hp;
+    [SerializeField]
+    private float maxHp = 100;
+
     void Start()
     {
         gameController = GameObject.FindGameObjectWithTag("GameController");
@@ -28,7 +33,8 @@ public class SheepController : MonoBehaviour
             mouse = gameController.GetComponent<MouseController>();
         }
         rig = GetComponent<Rigidbody2D>();
-        defaultDestination = new Vector2(0, 0);
+        defaultDestination = new Vector2(Random.Range(-8.5f, 8.5f), Random.Range(-4.5f, 4.5f));
+        hp = maxHp;
     }
 
     void Update()
@@ -45,10 +51,19 @@ public class SheepController : MonoBehaviour
         if (followingOrders)
         {
             followingOrders = GoToDestination(destination);
+            if (!followingOrders)
+            {
+                defaultDestinationReached = false;
+            }
         }
         else if (!defaultDestinationReached)
         {
             defaultDestinationReached = !GoToDestination(defaultDestination);
+            if (defaultDestinationReached)
+            {
+                defaultDestination = new Vector2(Random.Range(-8.5f, 8.5f), Random.Range(-4.5f, 4.5f));
+                defaultDestinationReached = false;
+            }
         }
     }
     public void SetDestination(Vector2 dest)
@@ -74,5 +89,10 @@ public class SheepController : MonoBehaviour
             ret = false;
         }
         return ret;
+    }
+
+    public void DecreaseHP(float value)
+    {
+        hp -= value;
     }
 }
